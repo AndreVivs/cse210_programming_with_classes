@@ -4,7 +4,7 @@ public class Entry
 {
     private string _date;
     private string _promptText;
-    private string _userResponse;
+    private string _entryText;
 
     public Entry()
     {
@@ -12,36 +12,48 @@ public class Entry
 
         _date = DateTime.Now.ToString("MM/dd/yyyy");
         _promptText = promptGenerator.GeneratePrompt();
-        _userResponse = "";
+        _entryText = "";
     }
 
-    public Entry(string date, string promptText, string userResponse)
+    public Entry(string date, string promptText, string entryText)
     {
         _date = date;
         _promptText = promptText;
-        _userResponse = userResponse;
+        _entryText = entryText;
     }
 
     public void WriteEntry()
     {
         Console.WriteLine(_promptText);
         Console.Write("> ");
-        _userResponse = Console.ReadLine() ?? "";
+
+        _entryText = Console.ReadLine() ?? "";
     }
 
     public void Display()
     {
-        Console.WriteLine($"Date: {_date} - Prompt: {_promptText}");
-        Console.WriteLine(_userResponse);
+        Console.WriteLine($"Date: {_date}");
+        Console.WriteLine($"Prompt: {_promptText}");
+        Console.WriteLine($"Response: {_entryText}");
     }
 
     public bool HasResponse()
     {
-        return !string.IsNullOrWhiteSpace(_userResponse);
+        return !string.IsNullOrWhiteSpace(_entryText);
     }
 
-    public string GetFileString()
+    public string GetDate()
     {
-        return $"{_date}|{_promptText}|{_userResponse}";
+        return _date;
+    }
+
+    public string GetPromptText()
+    {
+        return _promptText;
+    }
+
+    public string GetEntryText()
+    {
+        return _entryText;
     }
 }

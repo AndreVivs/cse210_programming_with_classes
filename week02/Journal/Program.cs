@@ -1,5 +1,7 @@
 using System;
 
+//I exceeded the requirements by implementing JSON file storage using System.Text.Json instead of a basic text file.
+//The program can serialize journal entries to JSON and deserialize them back into Entry objects when loading.
 class Program
 {
     static void Main(string[] args)
@@ -38,17 +40,21 @@ class Program
             }
             else if (option == "3")
             {
-                Console.Write("Enter the file name: ");
+                Console.Write("Enter the file name (example: journal.json): ");
                 string fileName = Console.ReadLine() ?? "";
 
                 journal.SaveToFile(fileName);
+
+                Console.WriteLine("Journal saved successfully.");
             }
             else if (option == "4")
             {
-                Console.Write("Enter the file name: ");
+                Console.Write("Enter the file name (example: journal.json): ");
                 string fileName = Console.ReadLine() ?? "";
 
                 journal.LoadFromFile(fileName);
+
+                Console.WriteLine("Journal loaded successfully.");
             }
             else if (option == "5")
             {

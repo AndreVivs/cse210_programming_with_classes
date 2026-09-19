@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 public class Journal
 {
@@ -22,32 +23,48 @@ public class Journal
 
     public void SaveToFile(string fileName)
     {
-        using (StreamWriter outputFile = new StreamWriter(fileName))
+        List<EntryData> data = new List<EntryData>();
+
+        foreach (Entry entry in _entries)
         {
-            foreach (Entry entry in _entries)
-            {
-                outputFile.WriteLine(entry.GetFileString());
-            }
+            EntryData entryData = new EntryData();
+
+            entryData.Date = entry.GetDate();
+            entryData.PromptText = entry.GetPromptText();
+            entryData.EntryText = entry.GetEntryText();
+
+            data.Add(entryData);
         }
+
+        string json = JsonSerializer.Serialize(
+            data,
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+
+        File.WriteAllText(fileName, json);
     }
 
     public void LoadFromFile(string fileName)
     {
-        string[] lines = File.ReadAllLines(fileName);
+        string json = File.ReadAllText(fileName);
+
+        List<EntryData> data =
+            JsonSerializer.Deserialize<List<EntryData>>(json);
 
         _entries.Clear();
 
-        foreach (string line in lines)
+        if (data != null)
         {
-            string[] parts = line.Split("|");
+            foreach (EntryData entryData in data)
+            {
+                Entry entry = new Entry(
+                    entryData.Date,
+                    entryData.PromptText,
+                    entryData.EntryText
+                );
 
-            string date = parts[0];
-            string promptText = parts[1];
-            string userResponse = parts[2];
-
-            Entry entry = new Entry(date, promptText, userResponse);
-
-            _entries.Add(entry);
+                _entries.Add(entry);
+            }
         }
     }
 }
