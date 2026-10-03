@@ -1,15 +1,22 @@
-using System;
-
 class Program
 {
     static void Main(string[] args)
     {
+        Activity activity = new Activity();
+
+        BreathingActivity breathingActivity =
+            new BreathingActivity();
+
+        ReflectingActivity reflectingActivity =
+            new ReflectingActivity();
+
+        ListingActivity listingActivity =
+            new ListingActivity();
+
         string option = "";
 
         while (option != "4")
         {
-            Activity activity = new Activity();
-
             option = activity.DisplayMenu();
 
             if (option == "4")
@@ -17,40 +24,41 @@ class Program
                 break;
             }
 
-            List<object> baseClassData = activity.GetBaseClassData();
+            List<object> baseClassData =
+                activity.GetBaseClassData();
 
-            string name = (string)baseClassData[0];
-            string description = (string)baseClassData[1];
+            string name =
+                (string)baseClassData[0];
+
+            string description =
+                (string)baseClassData[1];
 
             if (name == "Breathing Activity")
             {
-                BreathingActivity breathingActivity =
-                    new BreathingActivity();
-
-                breathingActivity.Run(name, description);
+                breathingActivity.Run(
+                    name,
+                    description
+                );
             }
             else if (name == "Reflecting Activity")
             {
-                ReflectingActivity reflectingActivity =
-                    new ReflectingActivity();
-
-                reflectingActivity.Run(name, description);
+                reflectingActivity.Run(
+                    name,
+                    description
+                );
             }
             else if (name == "Listing Activity")
             {
-                ListingActivity listingActivity =
-                    new ListingActivity();
-
-                listingActivity.Run(name, description);
+                listingActivity.Run(
+                    name,
+                    description
+                );
             }
-
-            Console.Clear();
         }
 
-        Console.WriteLine(
-            $"You completed {Activity.GetActivityCount()} activities."
-        );
+        Console.WriteLine();
+        Console.WriteLine($"CONGRATS!! You completed {Activity.GetActivityCount()} activities.");
+        Console.WriteLine("Exiting program...");
 
-        Console.WriteLine("Goodbye!");
     }
 }

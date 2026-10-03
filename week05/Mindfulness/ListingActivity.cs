@@ -2,6 +2,8 @@ using System;
 
 class ListingActivity : Activity
 {
+    private Random _random = new Random();
+    private List<string> _availablePrompts;
     private List<string>_prompts = new List<string>
     {
         "Who are people that you appreciate?",
@@ -14,36 +16,61 @@ class ListingActivity : Activity
     public void Run(string name, string description)
     {
         int duration = DisplayStartingMessage(name, description);
+
         Console.WriteLine("Get Ready...");
         ShowSpinner();
-        
-        GetRandomPrompt();
+
+        DisplayPrompt();
         ShowSpinner();
-        
+
         CountDown();
 
         GetListFromUser(duration);
         ShowSpinner();
-        
+
         DisplayEndingMessage(name, duration);
         ShowSpinner();
 
-        Console.Clear();
-
         Activity.IncrementActivityCount();
+
+        Console.Clear();
     }
 
-    public void GetRandomPrompt()
+     public ListingActivity()
     {
-        Random random = new Random();
-        int index = random.Next(_prompts.Count);
-        string prompt = _prompts[index];
+        _availablePrompts = new List<string>(_prompts);
+    }
 
-        Console.WriteLine("List as many responses you can to the following prompt:");
+    public string GetRandomPrompt()
+    {
+        int index = _random.Next(_availablePrompts.Count);
+
+        string prompt = _availablePrompts[index];
+
+        _availablePrompts.RemoveAt(index);
+
+        return prompt;
+    }
+
+
+    public void DisplayPrompt()
+    {
+        if (_availablePrompts.Count == 0)
+        {
+            _availablePrompts.AddRange(_prompts);
+        }
+
+        string prompt = GetRandomPrompt();
+
+        Console.WriteLine(
+            "List as many responses as you can to the following prompt:"
+        );
+
         Console.WriteLine();
+
         Console.WriteLine($"---{prompt}---");
-        Console.WriteLine();
 
+        Console.WriteLine();
     }
 
     public void GetListFromUser(int duration)

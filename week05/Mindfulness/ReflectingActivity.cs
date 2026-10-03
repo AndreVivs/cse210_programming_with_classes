@@ -6,6 +6,9 @@ using System;
 
 class ReflectingActivity : Activity
 {
+    private Random _random = new Random();
+    private List<string> _availablePrompts;
+    
     private List<string> _prompts = new List<string>
     {
         "Think of a time when you stood up for someone else.",
@@ -32,53 +35,102 @@ class ReflectingActivity : Activity
         "What strengths did you demonstrate?"
     };
 
+    public ReflectingActivity()
+    {
+        _availablePrompts = new List<string>(_prompts);
+    }
+
 
     public void Run(string name, string description)
     {
-        int duration = DisplayStartingMessage(name, description);
+        List<string> availablePrompts = new List<string>(_prompts);
+
+        List<string> availableQuestions = new List<string>(_questions);
+
+        int duration =
+            DisplayStartingMessage(name, description);
+
         Console.WriteLine("Get Ready...");
         ShowSpinner();
-        string enter = DisplayPrompt();
+
+        string enter =
+            DisplayPrompt(availablePrompts);
 
         if (enter == "")
         {
-            Console.WriteLine("Now ponder on each of the following questions as they related to this experience.");
+            Console.WriteLine(
+                "Now ponder on each of the following questions as they relate to this experience."
+            );
+
             CountDown();
+
             Console.Clear();
 
-            DisplayQuestion(duration);
+            DisplayQuestion(
+                duration,
+                availableQuestions
+            );
         }
-        ShowSpinner();
-        DisplayEndingMessage(name,duration);
+
         ShowSpinner();
 
-        Console.Clear();
+        DisplayEndingMessage(
+            name,
+            duration
+        );
+
+        ShowSpinner();
 
         Activity.IncrementActivityCount();
+        
+        Console.Clear();
     }
 
     public string GetRandomPrompt()
     {
-        Random random = new Random();
-        int index = random.Next(_prompts.Count);
-        return _prompts[index];
-
-    }
-    public string GetRandomQuestion()
-    {
-        Random random = new Random();
-        int index = random.Next(_questions.Count);
-        return _questions[index];
+        return GetRandomPrompt(_availablePrompts);
     }
 
-    public string DisplayPrompt()
+    public string GetRandomPrompt(List<string> availablePrompts)
     {
-        string prompt = GetRandomPrompt();
+        if (availablePrompts.Count == 0)
+        {
+            availablePrompts = new List<string>(_prompts);
+        }
+
+        int index = _random.Next(availablePrompts.Count);
+
+        string prompt = availablePrompts[index];
+
+        availablePrompts.RemoveAt(index);
+
+        return prompt;
+    }
+
+    public string GetRandomQuestion(List<string> availableQuestions)
+    {
+        int index = _random.Next(availableQuestions.Count);
+
+        string question = availableQuestions[index];
+
+        availableQuestions.RemoveAt(index);
+
+        return question;
+    }
+
+    public string DisplayPrompt(List<string> availablePrompts)
+    {
+        string prompt = GetRandomPrompt(availablePrompts);
+
         Console.WriteLine("Consider the following prompt.");
         Console.WriteLine();
         Console.WriteLine($"---{prompt}---");
         Console.WriteLine();
-        Console.Write("When you have something in mind, press Enter to continue:");
+
+        Console.Write(
+            "When you have something in mind, press Enter to continue:"
+        );
+
         string enter = Console.ReadLine();
 
         Console.WriteLine();
@@ -86,27 +138,30 @@ class ReflectingActivity : Activity
         return enter;
     }
 
-    public void DisplayQuestion(int duration)
-    {   
+    public void DisplayQuestion(int duration, List<string> availableQuestions)
+    {
         int questionDuration = 5;
         int questionCount = duration / questionDuration;
-        List<string> questionUsed = new List<string>();
-        string question = GetRandomQuestion();
-        
+
         while (questionCount > 0)
         {
-            if (question != "" && !questionUsed.Contains(question))
+            if (availableQuestions.Count == 0)
             {
-                questionUsed.Add(question);
-                Console.Write(question);
-                ShowSpinner(questionDuration);
-                questionCount--;
+                availableQuestions =
+                    new List<string>(_questions);
             }
-            question = GetRandomQuestion();
+
+            string question =
+                GetRandomQuestion(availableQuestions);
+
+            Console.Write(question);
+
+            ShowSpinner(questionDuration);
+
+            questionCount--;
         }
 
         Console.WriteLine();
         Console.WriteLine("Well done! - Session completed.");
-
     }
 }

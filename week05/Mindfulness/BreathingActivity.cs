@@ -12,8 +12,8 @@ class BreathingActivity : Activity
         DisplayEndingMessage(name,duration);
         ShowSpinner();
 
-        Console.Clear();
-
         Activity.IncrementActivityCount();
+        
+        Console.Clear();
     }
 }
