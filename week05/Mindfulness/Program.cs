@@ -1,3 +1,7 @@
+// The requirements were exceeded by:
+// - Keeping a log of how many times activities were performed.
+// - Making sure no random prompts/questions are selected until they have all been used at least once in that session.
+
 class Program
 {
     static void Main(string[] args)
