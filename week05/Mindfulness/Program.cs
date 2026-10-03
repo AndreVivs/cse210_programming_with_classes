@@ -16,8 +16,8 @@ class Program
         }
         else if (name == "Reflecting Activity")
         {
-            // ReflectingActivity reflectingActivity = new ReflectingActivity();
-            // reflectingActivity.Run();
+            ReflectingActivity reflectingActivity = new ReflectingActivity();
+            reflectingActivity.Run(name, description);
         }
         else if (name == "Listing Activity")
         {

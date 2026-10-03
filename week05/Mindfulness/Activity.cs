@@ -23,7 +23,9 @@ class Activity
         public int DisplayStartingMessage(string name, string description)
     {
         Console.WriteLine($"Welcome to the {name}.");
+        Console.WriteLine();
         Console.WriteLine(description);
+        Console.WriteLine();
         Console.Write("How long, in seconds, would you like for your session? ");
         int duration = int.Parse(Console.ReadLine());
 
@@ -38,13 +40,18 @@ class Activity
     }
 
     public void ShowSpinner()
+        {
+            ShowSpinner(_duration);
+        }
+
+    public void ShowSpinner(int duration)
     {
         List<string> animation = new List<string>
         {
             "|", "/", "-", "\\"
         };
 
-        DateTime endTime = DateTime.Now.AddSeconds(_duration);
+        DateTime endTime = DateTime.Now.AddSeconds(duration);
 
         int i = 0;
 
@@ -70,7 +77,8 @@ class Activity
 
     public void ShowCountDown(int duration)
     {
-        int breaths = duration / 10;
+        int breathDuration = 10;
+        int breaths = duration / breathDuration;
 
         for (int b = 0; b < breaths; b++)
         {
@@ -97,17 +105,29 @@ class Activity
         Console.WriteLine("Well done! - Session completed.");
     }
 
+    public int CountDown()
+    {
+        int count = 5;
+        while (count > 0)
+        {
+            Console.Write($"\rYou may begin in: {count} ");
+            Thread.Sleep(1000);
+            count--;
+        }
+        Console.WriteLine();
+        return count;
+    }
     public List<object> GetBaseClassData()
     {
         if (_name == "1")
         {
             _name = "Breathing Activity";
-            _description = "This activity will help you relax by walking your through a series of guided breaths. Clear your mind and focus on your breathing.";
+            _description = "This activity will help you relax by walking your through breathing in and out slowly. Clear your mind and focus on your breathing.";
         }
         else if (_name == "2")
         {
             _name = "Reflecting Activity";
-            _description = "This activity will help you reflect on your thoughts and feelings, promoting self-awareness and mindfulness.";
+            _description = "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.";
         }
         else if (_name == "3")
         {
@@ -118,6 +138,6 @@ class Activity
         {
             _name = "Quit";
         }
-        return new List<object> { _name, _description, _duration };
+        return new List<object> { _name, _description, };
     }
 }
