@@ -30,7 +30,7 @@ class ListingActivity : Activity
 
         Console.Clear();
 
-        DisplayMenu();
+        Activity.IncrementActivityCount();
     }
 
     public void GetRandomPrompt()

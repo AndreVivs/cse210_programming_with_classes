@@ -6,6 +6,18 @@ class Activity
     private string _description;
     private int _duration = 3;
 
+    private static int _activityCount = 0;
+
+    public static void IncrementActivityCount()
+    {
+        _activityCount++;
+    }
+
+    public static int GetActivityCount()
+    {
+        return _activityCount;
+    }
+    
     public string DisplayMenu()
     {
         Console.WriteLine("Menu Options:");

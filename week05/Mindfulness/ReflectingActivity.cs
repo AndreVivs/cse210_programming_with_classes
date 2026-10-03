@@ -54,7 +54,7 @@ class ReflectingActivity : Activity
 
         Console.Clear();
 
-        DisplayMenu();
+        Activity.IncrementActivityCount();
     }
 
     public string GetRandomPrompt()

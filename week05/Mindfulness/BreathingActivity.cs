@@ -14,6 +14,6 @@ class BreathingActivity : Activity
 
         Console.Clear();
 
-        DisplayMenu();
+        Activity.IncrementActivityCount();
     }
 }
