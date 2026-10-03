@@ -1,7 +1,8 @@
 using System;
 
 // The number of questions displayed to the user depend on the duration of the session.
-// and any questions that have already been asked will not be repeated.
+// Any questions that have already been asked will not be repeated.
+// More prompts and questions were added
 
 class ReflectingActivity : Activity
 {
