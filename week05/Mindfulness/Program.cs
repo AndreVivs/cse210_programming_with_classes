@@ -21,8 +21,8 @@ class Program
         }
         else if (name == "Listing Activity")
         {
-            // ListingActivity listingActivity = new ListingActivity();
-            // listingActivity.Run();
+            ListingActivity listingActivity = new ListingActivity();
+            listingActivity.Run(name, description);
         }
         else if (name == "Quit")
         {

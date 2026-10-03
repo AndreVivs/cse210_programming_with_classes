@@ -108,15 +108,20 @@ class Activity
     public int CountDown()
     {
         int count = 5;
+
         while (count > 0)
         {
             Console.Write($"\rYou may begin in: {count} ");
             Thread.Sleep(1000);
             count--;
         }
+
+        Console.Write("\rYou may begin in:   ");
         Console.WriteLine();
+
         return count;
     }
+
     public List<object> GetBaseClassData()
     {
         if (_name == "1")
@@ -132,7 +137,7 @@ class Activity
         else if (_name == "3")
         {
             _name = "Listing Activity";
-            _description = "This activity will help you list and organize your thoughts, enhancing clarity and focus.";
+            _description = "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.";
         }
         else if (_name == "4")
         {
