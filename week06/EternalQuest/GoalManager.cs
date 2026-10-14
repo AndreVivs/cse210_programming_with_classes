@@ -154,7 +154,8 @@ public class GoalManager
         for (int i = 0; i < _goals.Count; i++)
         {
             Console.WriteLine(
-                $"{i + 1}. {_goals[i].GetDetailsString()}"
+                $"{i + 1}. {_goals[i].GetDetailsString()} " +
+                $"-- Streak: {_goals[i].GetCurrentStreak()} day(s)"
             );
         }
     }
@@ -184,17 +185,25 @@ public class GoalManager
         }
 
         Goal selectedGoal = _goals[choice - 1];
-
         int earnedPoints = selectedGoal.RecordEvent();
+
+        if (earnedPoints > 0)
+        {
+            selectedGoal.UpdateStreak();
+        }
+
         _score += earnedPoints;
 
         Console.WriteLine(
             $"Congratulations! You earned {earnedPoints} points!"
         );
 
+        Console.WriteLine(
+            $"Current streak: {selectedGoal.GetCurrentStreak()} day(s)!"
+        );
+
         DisplayPlayerInfo();
     }
-
 
     public void SaveGoals()
     {
@@ -238,7 +247,6 @@ public class GoalManager
         }
     }
 
-    
     public void LoadGoals()
     {
         Console.Write("What is the filename for the goal file? ");
@@ -311,6 +319,29 @@ public class GoalManager
                 else
                 {
                     throw new FormatException("Unknown goal type.");
+                }
+
+                int streakIndex = goalType switch
+                {
+                    "SimpleGoal" => 5,
+                    "EternalGoal" => 4,
+                    "ChecklistGoal" => 7,
+                    _ => throw new FormatException("Unknown goal type.")
+                };
+
+                if (parts.Length >= streakIndex + 2)
+                {
+                    int streak = int.Parse(parts[streakIndex]);
+
+                    DateTime? lastDate = string.IsNullOrEmpty(parts[streakIndex + 1])
+                        ? null
+                        : DateTime.ParseExact(
+                            parts[streakIndex + 1],
+                            "yyyy-MM-dd",
+                            System.Globalization.CultureInfo.InvariantCulture
+                        );
+
+                    goal.RestoreStreak(streak, lastDate);
                 }
 
                 loadedGoals.Add(goal);
