@@ -7,6 +7,16 @@ public class GoalManager
 {
     private List<Goal> _goals;
     private int _score;
+    
+    private Dictionary<int, int> _milestones = new Dictionary<int, int>()
+    {
+        { 500, 50 },
+        { 1000, 100 },
+        { 2500, 250 },
+        { 5000, 500 }
+    };
+
+    private HashSet<int> _claimedMilestones = new HashSet<int>();
 
     public GoalManager()
     {
@@ -140,7 +150,7 @@ public class GoalManager
         _goals.Add(goal);
         Console.WriteLine("Goal created successfully!");
     }
-
+    
     public void ListGoalDetails()
     {
         Console.WriteLine("\nYour Goals:");
@@ -153,12 +163,19 @@ public class GoalManager
 
         for (int i = 0; i < _goals.Count; i++)
         {
-            Console.WriteLine(
-                $"{i + 1}. {_goals[i].GetDetailsString()} " +
-                $"-- Streak: {_goals[i].GetCurrentStreak()} day(s)"
-            );
+            Goal goal = _goals[i];
+
+            string details = goal.GetDetailsString();
+
+            if (goal is EternalGoal || goal is ChecklistGoal)
+            {
+                details += $" -- Streak: {goal.GetCurrentStreak()} day(s)";
+            }
+
+            Console.WriteLine($"{i + 1}. {details}");
         }
     }
+
 
     public void RecordEvent()
     {
@@ -185,9 +202,12 @@ public class GoalManager
         }
 
         Goal selectedGoal = _goals[choice - 1];
+        
+        int previousScore = _score;
         int earnedPoints = selectedGoal.RecordEvent();
 
-        if (earnedPoints > 0)
+        if (earnedPoints > 0 &&
+            (selectedGoal is EternalGoal || selectedGoal is ChecklistGoal))
         {
             selectedGoal.UpdateStreak();
         }
@@ -198,9 +218,14 @@ public class GoalManager
             $"Congratulations! You earned {earnedPoints} points!"
         );
 
-        Console.WriteLine(
-            $"Current streak: {selectedGoal.GetCurrentStreak()} day(s)!"
-        );
+        CheckMilestones(previousScore);
+
+        if (selectedGoal is EternalGoal || selectedGoal is ChecklistGoal)
+        {
+            Console.WriteLine(
+                $"Current streak: {selectedGoal.GetCurrentStreak()} day(s)!"
+            );
+        }
 
         DisplayPlayerInfo();
     }
@@ -227,6 +252,10 @@ public class GoalManager
             using (StreamWriter outputFile = new StreamWriter(filename))
             {
                 outputFile.WriteLine(_score);
+
+                string milestones = string.Join(",", _claimedMilestones.OrderBy(x => x));
+
+                outputFile.WriteLine($"Milestones:{milestones}");
 
                 foreach (Goal goal in _goals)
                 {
@@ -275,9 +304,37 @@ public class GoalManager
             }
 
             int loadedScore = int.Parse(lines[0]);
-            List<Goal> loadedGoals = new List<Goal>();
 
-            for (int i = 1; i < lines.Length; i++)
+            List<Goal> loadedGoals = new List<Goal>();
+            HashSet<int> loadedMilestones = new HashSet<int>();
+
+            int startIndex = 1;
+
+            if (lines.Length > 1 && lines[1].StartsWith("Milestones:"))
+            {
+                string milestoneData = lines[1].Substring("Milestones:".Length);
+
+                if (!string.IsNullOrWhiteSpace(milestoneData))
+                {
+                    string[] claimed = milestoneData.Split(',');
+
+                    foreach (string value in claimed)
+                    {
+                        int milestone = int.Parse(value);
+
+                        if (!_milestones.ContainsKey(milestone))
+                        {
+                            throw new FormatException("Invalid milestone value.");
+                        }
+
+                        loadedMilestones.Add(milestone);
+                    }
+                }
+
+                startIndex = 2;
+            }
+
+            for (int i = startIndex; i < lines.Length; i++)
             {
                 string[] parts = lines[i].Split('|');
 
@@ -349,6 +406,7 @@ public class GoalManager
 
             _score = loadedScore;
             _goals = loadedGoals;
+            _claimedMilestones = loadedMilestones;
 
             Console.WriteLine("Goals loaded successfully!");
         }
@@ -362,6 +420,30 @@ public class GoalManager
         )
         {
             Console.WriteLine($"Error loading goals: {ex.Message}");
+        }
+    }
+
+    private void CheckMilestones(int previousScore)
+    {
+        foreach (var milestone in _milestones)
+        {
+            int requiredPoints = milestone.Key;
+            int bonus = milestone.Value;
+
+            if (previousScore < requiredPoints &&
+                _score >= requiredPoints &&
+                !_claimedMilestones.Contains(requiredPoints))
+            {
+                _claimedMilestones.Add(requiredPoints);
+                _score += bonus;
+
+                Console.WriteLine();
+                Console.WriteLine("******************************");
+                Console.WriteLine("  MILESTONE UNLOCKED!");
+                Console.WriteLine($"  You reached {requiredPoints} points!");
+                Console.WriteLine($"  Bonus: +{bonus} points!");
+                Console.WriteLine("******************************");
+            }
         }
     }
 }

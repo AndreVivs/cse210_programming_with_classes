@@ -43,6 +43,16 @@ public abstract class Goal
     // Streak-related methods
     public int GetCurrentStreak()
     {
+        if (_lastRecordedDate == null)
+        {
+            return 0;
+        }
+
+        if (_lastRecordedDate.Value.Date < DateTime.Today.AddDays(-1))
+        {
+            return 0;
+        }
+
         return _currentStreak;
     }
 
